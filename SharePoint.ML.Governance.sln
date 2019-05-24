@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28917.181
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharePoint.ML.Governance", "SharePoint.ML.Governance.csproj", "{0AC64D17-A44E-4927-BDBA-2F2EBA13E96C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0AC64D17-A44E-4927-BDBA-2F2EBA13E96C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0AC64D17-A44E-4927-BDBA-2F2EBA13E96C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0AC64D17-A44E-4927-BDBA-2F2EBA13E96C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0AC64D17-A44E-4927-BDBA-2F2EBA13E96C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {39DE460B-EA1E-4635-BB33-3EFE9EA05E12}
+	EndGlobalSection
+EndGlobal
