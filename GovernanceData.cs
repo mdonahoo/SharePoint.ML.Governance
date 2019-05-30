@@ -25,9 +25,11 @@ namespace SharePoint.ML.Governance
         public float Usage;
         [Column("7"), ColumnName("Change"), LoadColumn(7)]
         public float Change;
-        [Column("8"), ColumnName("GoodBad"), LoadColumn(8)]
-        public bool GoodBad;
-        [Column("9"), ColumnName("Description"), LoadColumn(9)]
+        [Column("8"), ColumnName("Adoption"), LoadColumn(8)]
+        public float Adoption;
+        [Column("9"), ColumnName("Result"), LoadColumn(9)]
+        public bool Result;
+        [Column("10"), ColumnName("Description"), LoadColumn(10)]
         public string Description;
 
         //Tenant,Track,Age,Security,Activity,Protection,Usage,Change,GoodBad,Description

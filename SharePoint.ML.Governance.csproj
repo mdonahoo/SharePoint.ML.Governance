@@ -7,6 +7,8 @@
 
   <ItemGroup>
     <None Remove="Data\originaldata.csv" />
+    <None Remove="Data\randomdata.csv" />
+    <None Remove="Data\randomtest.csv" />
     <None Remove="Data\testdata.csv" />
     <None Remove="Data\traindata.csv" />
   </ItemGroup>
@@ -19,7 +21,13 @@
     <Resource Include="Data\originaldata.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Data\randomtest.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Data\testdata.csv">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Data\randomdata.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Data\traindata.csv">

@@ -9,8 +9,8 @@ namespace SharePoint.ML.Governance
 {
     class Program
     {
-        static readonly string _trainDataPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Data", "traindata.csv");
-        static readonly string _testDataPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Data", "testdata.csv");
+        static readonly string _trainDataPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Data", "randomdata.csv");
+        static readonly string _testDataPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Data", "randomtest.csv");
         static readonly string _modelPath = Path.Combine(Directory.GetParent(System.IO.Directory.GetCurrentDirectory()).Parent.Parent.FullName, "Model", "GovernanceModel.zip");
 
         static void Main(string[] args)
@@ -27,8 +27,8 @@ namespace SharePoint.ML.Governance
             var model = Train(mlContext, _trainDataPath);
             Console.WriteLine("Evaluating....");
             Evaluate(mlContext, model);
-            Console.WriteLine("Predicting....");
-            Predict(mlContext, string.Empty);
+            // Console.WriteLine("Predicting....");
+            //Predict(mlContext, string.Empty);
                 
             // Potentially, the lines below can be in a different process altogether.
             // When you load the model, it's a non-specific ITransformer. We also recover
@@ -44,16 +44,17 @@ namespace SharePoint.ML.Governance
         public static ITransformer Train(MLContext mlContext, string dataPath)
         {
             IDataView trainingData = mlContext.Data.LoadFromTextFile<GovernanceData>(dataPath, hasHeader: true, separatorChar: ',');
-            var preview = trainingData.Preview(10);
+            var preview = trainingData.Preview(1000);
+
+            Console.WriteLine("     Examples: " + preview.RowView.Length);
 
             var pipeline =
                  mlContext.Transforms.Concatenate("FeatureVector", "Age", "Security", "Activity", "Protection","Usage", "Change")
                  //.Append(mlContext.Transforms.NormalizeMinMax("FeatureVector"))
                  .Append(mlContext.Transforms.Categorical.OneHotEncoding("TenantOneHot", "Tenant"))
                  //.Append(mlContext.BinaryClassification.Trainers.AveragedPerceptron(labelColumnName: "GoodBad", featureColumnName: "FeatureVector"));
-                 .Append(mlContext.BinaryClassification.Trainers.SdcaLogisticRegression(labelColumnName: "GoodBad", featureColumnName: "FeatureVector"));
+                 .Append(mlContext.BinaryClassification.Trainers.SdcaLogisticRegression(labelColumnName: "Result", featureColumnName: "FeatureVector"));
             //.Append(mlContext.BinaryClassification.Trainers.Prior(labelColumnName: "Label", exampleWeightColumnName: null));
-            //.Append(mlContext.BinaryClassification.Trainers.AveragedPerceptron());
             //.Append(mlContext.Transforms.Categorical.OneHotEncoding(outputColumnName: "VendorIdEncoded", inputColumnName: "VendorId"))
             //.Append(mlContext.Transforms.Categorical.OneHotEncoding(outputColumnName: "RateCodeEncoded", inputColumnName: "RateCode"))
             //.Append(mlContext.Transforms.Categorical.OneHotEncoding(outputColumnName: "PaymentTypeEncoded", inputColumnName: "PaymentType"))
@@ -79,13 +80,23 @@ namespace SharePoint.ML.Governance
         {
             IDataView testData = mlContext.Data.LoadFromTextFile<GovernancePrediction>(_testDataPath, hasHeader: true, separatorChar: ',');
             var predictions = model.Transform(testData);
-            var metrics = mlContext.BinaryClassification.Evaluate(predictions, "GoodBad", "Score", "Probability", "PredictedGovernance");
+
+            var metrics = mlContext.BinaryClassification.Evaluate(predictions, "Result", "Score", "Probability", "PredictedGovernance");
             Console.WriteLine();
             Console.WriteLine($"*************************************************");
             Console.WriteLine($"*       Model quality metrics evaluation         ");
             Console.WriteLine($"*------------------------------------------------");
             Console.WriteLine($"*       Accuracy:      {metrics.Accuracy:0.##}");
             Console.WriteLine($"*       F1Score:      {metrics.F1Score:0.##}");
+            Console.WriteLine($"*       AreaUnderPrecisionRecallCurve:      {metrics.AreaUnderPrecisionRecallCurve:0.##}");
+            Console.WriteLine($"*       AreaUnderRocCurve:      {metrics.AreaUnderRocCurve:0.##}");
+            Console.WriteLine($"*       Entropy:      {metrics.Entropy:0.##}");
+            Console.WriteLine($"*       PositivePrecision:      {metrics.PositivePrecision:0.##}");
+            Console.WriteLine($"*       PositiveRecall:      {metrics.PositiveRecall:0.##}");
+            Console.WriteLine($"*       NegativeRecall:      {metrics.NegativeRecall:0.##}");
+            Console.WriteLine($"*       NumberOfClasses:      {metrics.ConfusionMatrix.NumberOfClasses:0.##}");
+            Console.WriteLine("*        Confusion Matrix:                         ");
+            Console.WriteLine(metrics.ConfusionMatrix.GetFormattedConfusionTable());
             Console.WriteLine($"*------------------------------------------------");
             Console.WriteLine();
         }
@@ -149,6 +160,9 @@ namespace SharePoint.ML.Governance
             IDataView predictiondata = mlContext.Data.LoadFromEnumerable<GovernanceData>(lotsOfData);
             // Get Prediction
             IDataView predictions = predictionPipeline.Transform(predictiondata);
+            var preview = predictions.Preview(1000);
+            Console.WriteLine("     Predictions: " + preview.RowView.Length);
+
             System.Collections.Generic.IEnumerable<float> scoreColumn = predictions.GetColumn<float>("Score");
             System.Collections.Generic.IEnumerable<float> probabilityColumn = predictions.GetColumn<float>("Probability");
 
